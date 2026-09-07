@@ -13,7 +13,7 @@ fijo y reaccionar a los códigos HTTP reales).
 | GeckoTerminal (CoinGecko onchain keyless) | Mercado (2ª prioridad) | Sí | No | Documentado como activo | ~10-30 req/min (cifra no confirmada de forma oficial, ver pendientes) | Sí da OHLC. |
 | Jupiter Price API (`lite-api.jup.ag`) | Mercado (3ª prioridad) | Sí | No | Documentado como activo tras migración de plataforma (corte 30/jun/2026) | No confirmado tras la migración | Solo precio, sin liquidez/volumen. |
 | RugCheck (`api.rugcheck.xyz`) | Riesgo (1ª prioridad) | Sí | No | Reportado "healthy" en directorios recientes | No confirmado con la doc oficial | Mejor fuente gratis de mint/freeze authority, holders, LP lock. |
-| pump.fun (API no oficial) | — (descartada como dependencia principal) | — | — | ❌ Tuvo caída de DNS en junio 2026 | — | No tiene API oficial. Se usa lectura on-chain directa en su lugar. |
+| pump.fun (lectura on-chain) | Riesgo/estado de bonding curve (lectura directa) | Sí (RPC) | No | ✅ **Verificado 7/sep/2026**: Program ID `6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P` y layout de la cuenta `BondingCurve` (81 bytes, incluye campo `creator`) confirmados contra el repo oficial `pump-fun/pump-public-docs` y bindings Anchor/Codama publicados en docs.rs, coincidentes con Bitquery, Solana Tracker y varios SDKs de terceros | — | Activado por defecto en `.env.example` (`PUMPFUN_PROGRAM_ID_CONFIRMED=true`). La migración "breaking" de fees de abril 2026 solo afecta a instrucciones de compra/venta, no a esta lectura de solo datos. |
 | Solana RPC público | Fallback de último recurso | Sí | No | Confirmado no apto para uso sostenido | ~100 req/10s por IP | Usar RPC dedicado gratuito en su lugar. |
 | Helius (free tier) | RPC recomendado | Requiere cuenta gratuita | Sí (gratis) | Documentado activo | ~1M créditos/mes, 10 RPS | No requiere wallet, solo email. |
 | Birdeye | Enriquecimiento opcional | Requiere cuenta gratuita | Sí (gratis) | Documentado activo | Free tier pequeño (~30k CU/mes) | No es fuente primaria por lo limitado. |
@@ -22,13 +22,19 @@ fijo y reaccionar a los códigos HTTP reales).
 
 ## Pendiente de confirmar antes de producción
 
-- Rate limit oficial documentado directamente por RugCheck (no de
-  terceros).
+- Rate limit oficial de RugCheck: **sigue sin encontrarse documentación
+  oficial publicada** con cifras concretas (búsqueda dedicada el
+  7/sep/2026 solo devolvió páginas de marketing y scrapers de terceros,
+  no una doc técnica con números). RugCheck sí ofrece una API key
+  gratuita opcional desde su dashboard — si el uso crece, vale la pena
+  registrarse para tener un tier documentado en vez de depender del
+  endpoint público sin key. Mientras tanto, `ResilientClient` ya está
+  diseñado para no asumir un número y reaccionar a 429 reales.
 - Si el free tier de Helius (u otro RPC gratuito) permite websockets
   (`accountSubscribe`/`logsSubscribe`) para acercarse a tiempo real.
-- Program ID e IDL actuales de pump.fun, para verificar
-  `backend/app/onchain/pumpfun_decoder.py` contra el programa real antes
-  de activarlo (`PUMPFUN_PROGRAM_ID_CONFIRMED=true`).
-- Límite exacto de GeckoTerminal keyless contra su documentación oficial.
+- ~~Program ID e IDL actuales de pump.fun~~ ✅ **Resuelto** (ver tabla de
+  arriba y `backend/app/onchain/pumpfun_decoder.py`).
+- Límite exacto de GeckoTerminal keyless contra su documentación oficial
+  (sigue sin confirmarse con precisión).
 - Programas de locker de LP más usados en Solana, para verificar
   "LP lock" de forma más robusta que el dato agregado de RugCheck.
