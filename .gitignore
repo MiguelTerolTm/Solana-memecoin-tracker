@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+*.db
+
+# Env
+.env
+.env.local
+
+# Node
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+
+# OS
+.DS_Store
