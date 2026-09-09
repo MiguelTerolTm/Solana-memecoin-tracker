@@ -30,6 +30,20 @@ export interface AggregatedToken {
   score: TokenScore | null;
 }
 
+export interface WatchlistEntry {
+  mint: string;
+  symbol: string | null;
+  added_at: string;
+  note: string | null;
+}
+
+export interface HistoryPoint {
+  fetched_at: string;
+  price_usd: number | null;
+  liquidity_usd: number | null;
+  tracker_score: number | null;
+}
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
 
 export async function fetchToken(mint: string): Promise<AggregatedToken> {
@@ -39,4 +53,23 @@ export async function fetchToken(mint: string): Promise<AggregatedToken> {
     throw new Error(body.detail || `Error ${res.status} consultando el token`);
   }
   return res.json();
+}
+
+export async function fetchTokenHistory(mint: string): Promise<HistoryPoint[]> {
+  const res = await fetch(`${API_BASE_URL}/api/tokens/${mint}/history`, { cache: "no-store" });
+  if (!res.ok) throw new Error(`Error ${res.status} consultando el histórico`);
+  return res.json();
+}
+
+export async function fetchWatchlist(): Promise<WatchlistEntry[]> {
+  const res = await fetch(`${API_BASE_URL}/api/watchlist`, { cache: "no-store" });
+  if (!res.ok) throw new Error(`Error ${res.status} consultando la watchlist`);
+  return res.json();
+}
+
+export async function addToWatchlist(mint: string, note?: string): Promise<void> {
+  const url = new URL(`${API_BASE_URL}/api/watchlist/${mint}`);
+  if (note) url.searchParams.set("note", note);
+  const res = await fetch(url.toString(), { method: "POST" });
+  if (!res.ok) throw new Error(`Error ${res.status} añadiendo a la watchlist`);
 }

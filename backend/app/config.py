@@ -19,6 +19,13 @@ class Settings:
     # de lectura.
     solana_rpc_url: str = os.getenv("SOLANA_RPC_URL", "https://api.mainnet-beta.solana.com")
 
+    # URL websocket para casi-tiempo-real (ver backend/app/onchain/pumpfun_listener.py).
+    # Formato típico con Helius: wss://mainnet.helius-rpc.com/?api-key=TU_KEY
+    # El plan Free de Helius soporta esto sin coste (verificado 7/sep/2026, ver
+    # docs/data-sources.md). Vacío por defecto: sin esto configurado, el listener
+    # simplemente no arranca, el resto del sistema sigue funcionando por polling.
+    solana_ws_url: str | None = os.getenv("SOLANA_WS_URL")
+
     # Claves opcionales de fuentes que sí las requieren (todas de solo lectura).
     birdeye_api_key: str | None = os.getenv("BIRDEYE_API_KEY")
 

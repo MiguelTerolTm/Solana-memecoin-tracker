@@ -30,8 +30,16 @@ fijo y reaccionar a los códigos HTTP reales).
   registrarse para tener un tier documentado en vez de depender del
   endpoint público sin key. Mientras tanto, `ResilientClient` ya está
   diseñado para no asumir un número y reaccionar a 429 reales.
-- Si el free tier de Helius (u otro RPC gratuito) permite websockets
-  (`accountSubscribe`/`logsSubscribe`) para acercarse a tiempo real.
+- ~~Si el free tier de Helius permite websockets~~ ✅ **Resuelto (7/sep/2026)**:
+  el plan Free de Helius permite **5 conexiones websocket simultáneas** y
+  da acceso a los métodos **estándar** de Solana (`logsSubscribe`,
+  `programSubscribe`, `accountSubscribe`, `signatureSubscribe`) sin coste.
+  Los métodos *mejorados* propios de Helius (`transactionSubscribe`,
+  filtros avanzados de `accountSubscribe`) sí requieren plan de pago, pero
+  no son necesarios para este proyecto. Con esto, sí es viable "casi
+  tiempo real" gratis: `logsSubscribe` sobre el Program ID de pump.fun
+  para detectar lanzamientos nuevos, y `accountSubscribe` sobre las
+  bonding curves de los tokens en watchlist para actualizaciones en vivo.
 - ~~Program ID e IDL actuales de pump.fun~~ ✅ **Resuelto** (ver tabla de
   arriba y `backend/app/onchain/pumpfun_decoder.py`).
 - Límite exacto de GeckoTerminal keyless contra su documentación oficial
