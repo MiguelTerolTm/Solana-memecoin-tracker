@@ -62,5 +62,15 @@ class SolanaRpcClient:
         result = await self._call("getProgramAccounts", [program_id, config])
         return result
 
+    async def get_transaction(self, signature: str) -> dict | None:
+        result = await self._call(
+            "getTransaction",
+            [
+                signature,
+                {"encoding": "jsonParsed", "commitment": "confirmed", "maxSupportedTransactionVersion": 0},
+            ],
+        )
+        return result
+
 
 solana_rpc = SolanaRpcClient()

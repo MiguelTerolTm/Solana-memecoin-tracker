@@ -40,7 +40,14 @@ class RiskReport(BaseModel):
 
     mint: str
     risk_score: Optional[float] = Field(
-        default=None, description="0-10 según convención de RugCheck; ver docs/risk-methodology.md"
+        default=None,
+        description=(
+            "Escala propia de RugCheck (NO es 0-10 como se asumía antes de probar con datos "
+            "reales el 9/sep/2026 — se observó un valor de 101 para un token conocido y de "
+            "bajo riesgo, BONK). Más alto = más señales de riesgo, sin techo fijo. No se usa "
+            "directamente en scoring/rules.py por esta razón: se prefieren las señales "
+            "individuales (autoridades, holders, LP) que sí tienen una escala clara."
+        ),
     )
     is_rugged: Optional[bool] = None
     mint_authority_active: Optional[bool] = None

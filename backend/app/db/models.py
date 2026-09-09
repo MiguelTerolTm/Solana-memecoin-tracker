@@ -51,3 +51,19 @@ class WatchlistEntry(Base):
     symbol: Mapped[str | None] = mapped_column(String, nullable=True)
     added_at: Mapped[datetime] = mapped_column(DateTime)
     note: Mapped[str | None] = mapped_column(String, nullable=True)
+
+
+class TokenLaunch(Base):
+    """
+    Lanzamientos nuevos de pump.fun detectados por el websocket
+    (backend/app/onchain/pumpfun_listener.py) y confirmados leyendo la
+    transacción real (backend/app/workers/launch_ingestor.py) — no nos
+    fiamos solo del log, verificamos contra postTokenBalances.
+    """
+    __tablename__ = "token_launches"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    mint: Mapped[str] = mapped_column(String, unique=True, index=True)
+    creator: Mapped[str | None] = mapped_column(String, nullable=True)
+    signature: Mapped[str] = mapped_column(String, index=True)
+    detected_at: Mapped[datetime] = mapped_column(DateTime, index=True)

@@ -15,7 +15,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.aggregation.orchestrator import get_market_snapshot, get_risk_report, get_onchain_facts
 from app.aggregation.schemas import AggregatedToken
-from app.db.models import TokenSnapshot, WatchlistEntry
+from app.db.models import TokenSnapshot, WatchlistEntry, TokenLaunch
 from app.db.session import get_session
 from app.scoring.rules import score_token
 
@@ -101,4 +101,21 @@ async def list_watchlist(session: AsyncSession = Depends(get_session)):
     return [
         {"mint": e.mint, "symbol": e.symbol, "added_at": e.added_at, "note": e.note}
         for e in result.scalars().all()
+    ]
+
+
+@router.get("/launches")
+async def list_recent_launches(limit: int = 50, session: AsyncSession = Depends(get_session)):
+    """
+    Lanzamientos nuevos de pump.fun detectados por el listener de websocket
+    (ver app/workers/launch_ingestor.py). Vacío si SOLANA_WS_URL no está
+    configurado, o si todavía no ha pasado ningún lanzamiento nuevo desde
+    que arrancó el servidor.
+    """
+    result = await session.execute(
+        select(TokenLaunch).order_by(TokenLaunch.detected_at.desc()).limit(limit)
+    )
+    return [
+        {"mint": r.mint, "creator": r.creator, "detected_at": r.detected_at, "signature": r.signature}
+        for r in result.scalars().all()
     ]
